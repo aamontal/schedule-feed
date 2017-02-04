@@ -197,28 +197,18 @@ class ScheduleFeedDepartures extends React.Component {
         {this.header()}
         <div className="flexContainer">
           {this.searchInput() }
+          {this.polling()}
         </div>
-
         <ResponsiveTable rows={schedule} columns={this.columnNames()} format={this.formatMap.bind(this)} />
       </div>
     )
   }
 }
 
-const Params = function(queryString) {
-  this.params = queryString
-  this.getBoolean = (value) => { return this.params[value] === 'true' }
-  this.polling = () => { return Boolean(this.getBoolean("polling")) }
-}
-
-Params.of = (queryString) => { return new Params(queryString) }
-
-const params = Params.of(window.APP_PARAMS)
-
 ReactDOM.render(
   <ScheduleFeedDepartures
     intervalTime={ 5000 }
-    polling={params.polling()}
-    endpoint={window.APP_API_DEPART}
+    polling={false}
+    endpoint={window.APP_API_DEPARTURES}
   />, document.getElementById("departureApp")
 )
