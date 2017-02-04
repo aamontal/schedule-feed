@@ -6,15 +6,14 @@ class ScheduleFeedDepartures extends React.Component {
 
   constructor(props) {
     super(props)
-    this.state = {schedule: [], filter: '', interval: null}
+    this.state = {
+      schedule: [],
+      filter: '',
+      interval: null,
+      poll: props.polling
+    }
     this.previousSearch = null
     this.previousTimer = null
-  }
-
-  getDefaultProps() {
-    return {
-      intervalTime: 3000
-    }
   }
 
   addEstDeparture(row) {
@@ -80,6 +79,7 @@ class ScheduleFeedDepartures extends React.Component {
 
   componentDidMount() {
     this.fetchSchedule()
+    this.togglePolling(this.state.poll)
   }
 
   setSchedule(schedule) {
@@ -120,16 +120,20 @@ class ScheduleFeedDepartures extends React.Component {
       filterSearch(value),
       500
     )
+  }
 
+  togglePolling(check) {
+     if(check){
+      let interval = setInterval(this.fetchSchedule.bind(this), parseInt(this.props.intervalTime))
+      this.setState({interval: interval, poll: true})
+    } else {
+      this.setState({poll: false})
+      clearInterval(this.state.interval)
+    }
   }
 
   handlePollChange(e) {
-    if(e.target.checked){
-      let interval = setInterval(this.fetchSchedule.bind(this), parseInt(this.props.intervalTime))
-      this.setState({interval: interval})
-    } else {
-      clearInterval(this.state.interval)
-    }
+    this.togglePolling(e.target.checked)
   }
 
   now() {
@@ -142,7 +146,7 @@ class ScheduleFeedDepartures extends React.Component {
   searchInput() {
     return(
       <div className="right">
-        <label htmlFor="search" className="control-label spread">Search:</label>
+        <label htmlFor="search" className="control-label spread">Find Destination:</label>
         <input name="search" type="text" onKeyUp={this.handleKeyPress.bind(this)} />
       </div>
     )
@@ -152,10 +156,11 @@ class ScheduleFeedDepartures extends React.Component {
     return(
       <div className="flexContainer">
         <div className="spread">
-          <span>{this.now()}</span>
+          <label htmlFor="today" className="control-label">Today:</label>
+          <span name="today" className="spread">{this.now()}</span>
         </div>
         <div className="spread">
-          <label htmlFor="isPolling" className="control-label">Updated:</label>
+          <label htmlFor="isPolling" className="control-label">Last Updated:</label>
           <span className="spread" name="lastUpdated"><em>{ new Date().toLocaleTimeString() }</em></span>
         </div>
       </div>
@@ -165,7 +170,7 @@ class ScheduleFeedDepartures extends React.Component {
   polling() {
     return(
      <div className="spread">
-        <label htmlFor="isPolling" className="control-label">Refresh:</label>
+        <label htmlFor="isPolling" className="control-label">Auto-refresh:</label>
         <span className="spread">
         <input
           name="isPolling"
@@ -179,8 +184,7 @@ class ScheduleFeedDepartures extends React.Component {
 
   render() {
     const {schedule} = this.state
-    console.log(schedule)
-
+    console.log("rendering...", schedule.length)
     return (
       <div>
         {this.header()}
@@ -196,6 +200,6 @@ class ScheduleFeedDepartures extends React.Component {
 }
 
 ReactDOM.render(
-  <ScheduleFeedDepartures intervalTime="5000" />,
+  <ScheduleFeedDepartures intervalTime="5000" polling={false}/>,
   document.getElementById("departureApp")
 )
