@@ -33,7 +33,7 @@ defmodule ScheduleFeed.SampleFeedController do
        "ScheduledTime" => "1486094400", "Status" => "On Time",
        "TimeStamp" => "1486087254", "Track" => "", "Trip" => "227"},
      %{"Destination" => "Readville", "Lateness" => "0", "Origin" => "South Station",
-       "ScheduledTime" => "1486087200", "Status" => "All Aboard",
+       "ScheduledTime" => "1486087200", "Status" => "Cancelled",
        "TimeStamp" => "1486087254", "Track" => "11", "Trip" => "785"},
      %{"Destination" => "Forge Park / 495", "Lateness" => "0",
        "Origin" => "South Station", "ScheduledTime" => "1486087200",

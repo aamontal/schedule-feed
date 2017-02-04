@@ -1,64 +1,54 @@
-// Brunch automatically concatenates all files in your
-// watched paths. Those paths can be configured at
-// config.paths.watched in "brunch-config.js".
-//
-// However, those files will only be executed if
-// explicitly imported. The only exception are files
-// in vendor, which are never wrapped in imports and
-// therefore are always executed.
-
-// Import dependencies
-//
-// If you no longer want to use a dependency, remember
-// to also remove its path from "config.paths.watched".
-import "phoenix_html"
-
-// Import local files
-//
-// Local files can be imported directly using relative
-// paths "./socket" or full ones "web/static/js/socket".
-
-// import socket from "./socket"
 import React from "react"
 import ReactDOM from "react-dom"
-import _ from 'lodash'
 import ResponsiveTable from './responsive-table.js'
 
 class ScheduleFeedDepartures extends React.Component {
 
   constructor(props) {
     super(props)
-    this.state = {schedule: [], filter: ''}
-
+    this.state = {schedule: [], filter: '', interval: null}
     this.previousSearch = null
     this.previousTimer = null
   }
 
-  headers() {
+  getDefaultProps() {
     return {
-      Destination: "Destination",
-      Lateness: "Lateness",
-      Origin: "Origin",
-      ScheduledTime: "Scheduled Time",
-      Status: "Status",
-      TimeStamp: "Time Stamp",
-      Track: "Track",
-      Trip: "Trip"
+      intervalTime: 3000
     }
   }
 
-
-  foramtStatus(status) { 
-    if(status == "On Time")
-      return (<span className='green'>{status}</span>)
-    else
-      return status
+  columnNames() {
+    return {
+      ScheduledTime: "Scheduled Time",
+      Destination: "Destination",
+      Origin: "Origin",
+      Trip: "Train #",
+      Track: "Track #",
+      Status: "Status"
+    }
   }
+
+  foramtStatus(status) {
+    switch(status) {
+    case "On Time":
+      return (<span className='green'>{status}</span>)
+    case "Now Boarding":
+      return (<span className="blink_me">{status}</span>)
+    case "All Aboard":
+      return (<strong className="blink_me">{status}</strong>)
+    case "Cancelled":
+      return (<span className='red'>{status}</span>)
+    default:
+      return status
+    }
+  }
+
   formatMap(column, value) {
     const action = {
       ScheduledTime:  this.formatTime,
-      TimeStamp:      this.formatTime,
+      TimeStamp:      this.formatDate,
       Status:         this.foramtStatus,
+      Track:          (track) => { return Boolean(track) ? track : "TBD" }
     }
 
     if(action[column])
@@ -67,62 +57,135 @@ class ScheduleFeedDepartures extends React.Component {
       return value
   }
 
-  formatTime(unixtime) {
-    const newDate = new Date();
-    newDate.setTime(Number(unixtime) * 1000);
+  formatDate(unixtime) {
+    const newDate = new Date()
+    newDate.setTime(Number(unixtime) * 1000)
     return <span>{newDate.toLocaleString()}</span>
-    
+  }
+
+ formatTime(unixtime) {
+    const newDate = new Date()
+    newDate.setTime(Number(unixtime) * 1000)
+    return <span>{newDate.toLocaleTimeString()}</span>
   }
 
   componentDidMount() {
     this.fetchSchedule()
   }
 
+  setSchedule(schedule) {
+    const filteredSchedule = schedule.filter((s) => {
+      if(this.state.filter){
+        return s.Destination.toLowerCase().includes(this.state.filter)
+      } else {
+        return true
+      }
+    })
+    this.setState({schedule: filteredSchedule})
+  }
 
-  fetchSchedule(callback) {
-    const setSchedule = (schedule) => { 
-      const self = this
-      const filteredSchedule = _.filter(schedule, (s) => {
-        if(self.state.filter){
-          return s.Destination.toLowerCase().includes(self.state.filter)
-        } else {
-          return true
-        }
+  fetchSchedule() {
+    $.getJSON('/api/sample_feed.json')
+      .done(this.setSchedule.bind(this))
+      .fail(() => {
+        alert("Error fetching departures, please try again")
       })
-  
-      self.setState({schedule: filteredSchedule})
-      if(Boolean(callback)) callback()
+  }
+
+  handleKeyPress(e) {
+    let value = e.target.value
+
+    const filterSearch = (filterValue) => {
+      this.setState({filter: filterValue.toLowerCase()})
+      this.fetchSchedule()
     }
 
+    //prevent racecondition in case server is slow
     this.previousSearch && this.previousSearch.abort()
-    clearTimeout(this.previousTimer);
+    clearTimeout(this.previousTimer)
 
+    //give user sometime to type
     this.previousTimer = setTimeout( () =>
-      $.getJSON('/api/sample_feed.json', setSchedule),
-      300
+      filterSearch(value),
+      500
+    )
+
+  }
+
+  handlePollChange(e) {
+    if(e.target.checked){
+      let interval = setInterval(this.fetchSchedule.bind(this), parseInt(this.props.intervalTime))
+      this.setState({interval: interval})
+    } else {
+      clearInterval(this.state.interval)
+    }
+  }
+
+  now() {
+    const today = new Date()
+    const day = today.toLocaleString('en-us', {  weekday: 'long' })
+    const date = today.toLocaleDateString('en-us')
+    return `${day} ${date}`
+  }
+
+  searchInput() {
+    return(
+      <div className="right">
+        <label htmlFor="search" className="control-label spread">Destination Search:</label>
+        <input name="search" type="text" onKeyUp={this.handleKeyPress.bind(this)} />
+      </div>
     )
   }
 
-  handleKeyPress(e) { 
-    this.setState({filter: e.target.value.toLowerCase()})
-    this.fetchSchedule()
+  header() {
+    return(
+      <div className="container">
+        <div className="spread">
+          <span>{this.now()}</span>
+        </div>
+        <div className="top spread">DEPARTURE INFORMATION</div>
+        <div className="spread">
+          <label htmlFor="isPolling" className="control-label">Last Updated:</label>
+          <span className="spread" name="lastUpdated"><em>{ new Date().toLocaleTimeString() }</em></span>
+        </div>
+      </div>
+    )
+  }
+
+  polling() {
+    return(
+     <div className="spread">
+        <label htmlFor="isPolling" className="control-label">Auto-refresh:</label>
+        <span className="spread">
+        <input
+          name="isPolling"
+          type="checkbox"
+          checked={this.state.poll}
+          onChange={this.handlePollChange.bind(this)} />
+        </span>
+      </div>
+    )
   }
 
   render() {
-    const {schedule} = this.state;
-    console.log(schedule);
+    const {schedule} = this.state
+    console.log(schedule)
 
     return (
       <div>
-        <div>MBTA Departures</div>
-        <span>Destination: <input type="text" onKeyUp={this.handleKeyPress.bind(this)} /></span>
-        <ResponsiveTable rows={schedule} columns={this.headers()} format={ this.formatMap.bind(this) } />
+        {this.header()}
+        <div className="container">
+          {this.searchInput() }
+          {this.polling()}
+        </div>
+
+        <ResponsiveTable rows={schedule} columns={this.columnNames()} format={this.formatMap.bind(this)} />
       </div>
     )
   }
 }
 
 ReactDOM.render(
-  <ScheduleFeedDepartures />,
+  <ScheduleFeedDepartures intervalTime="5000" />,
   document.getElementById("departureApp")
 )
