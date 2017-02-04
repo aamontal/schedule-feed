@@ -85,7 +85,7 @@ class ScheduleFeedDepartures extends React.Component {
   }
 
   fetchSchedule() {
-    $.getJSON('/api/sample_feed.json')
+    $.getJSON('/api/departures.json')
       .done(this.setSchedule.bind(this))
       .fail(() => {
         alert("Error fetching departures, please try again")
