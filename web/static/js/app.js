@@ -136,6 +136,11 @@ class ScheduleFeedDepartures extends React.Component {
     this.togglePolling(e.target.checked)
   }
 
+  handleButtonClick(e) {
+    e.preventDefault()
+    this.fetchSchedule()
+  }
+
   now() {
     const today = new Date()
     const day = today.toLocaleString('en-us', {  weekday: 'long' })
@@ -145,9 +150,9 @@ class ScheduleFeedDepartures extends React.Component {
 
   searchInput() {
     return(
-      <div className="right">
-        <label htmlFor="search" className="control-label spread">Find Destination:</label>
+      <div className="spread">
         <input name="search" type="text" onKeyUp={this.handleKeyPress.bind(this)} />
+        <button onClick={this.handleButtonClick.bind(this)}>search</button>
       </div>
     )
   }
