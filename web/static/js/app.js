@@ -143,9 +143,9 @@ class ScheduleFeedDepartures extends React.Component {
         <div className="spread">
           <span>{this.now()}</span>
         </div>
-        <div className="top spread">DEPARTURE INFORMATION</div>
+        <div className="top spread">T Departure Infomation</div>
         <div className="spread">
-          <label htmlFor="isPolling" className="control-label">Last Updated:</label>
+          <label htmlFor="isPolling" className="control-label">Updated:</label>
           <span className="spread" name="lastUpdated"><em>{ new Date().toLocaleTimeString() }</em></span>
         </div>
       </div>
