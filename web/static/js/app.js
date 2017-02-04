@@ -111,7 +111,7 @@ class ScheduleFeedDepartures extends React.Component {
     return $.getJSON(this.props.endpoint)
       .done(this.setSchedule.bind(this))
       .fail(() => {
-        alert("Error fetching departures, please try again")
+        console.warn("Aborting fetching departures, please try again")
       })
   }
 
