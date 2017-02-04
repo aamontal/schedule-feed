@@ -1,1 +1,3 @@
 <div id="departureApp"></div>
+<script>APP_PARAMS=<%= raw Poison.encode!(@params) %></script>
+<script>APP_API_DEPART=<%= raw Poison.encode!(@api_depart) %></script>

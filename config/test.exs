@@ -17,3 +17,6 @@ config :schedule_feed, ScheduleFeed.Repo,
   database: "schedule_feed_test",
   hostname: "localhost",
   pool: Ecto.Adapters.SQL.Sandbox
+
+config :schedule_feed,
+  departures_url: "/api/sample_feed.json"

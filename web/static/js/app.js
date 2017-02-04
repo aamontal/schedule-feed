@@ -1,11 +1,13 @@
 import React from "react"
 import ReactDOM from "react-dom"
 import ResponsiveTable from './responsive-table.js'
+import _ from "lodash"
 
 class ScheduleFeedDepartures extends React.Component {
 
   constructor(props) {
     super(props)
+
     this.state = {
       schedule: [],
       filter: '',
@@ -18,7 +20,7 @@ class ScheduleFeedDepartures extends React.Component {
 
   addEstDeparture(row) {
     const estDeparture = Number(row.ScheduledTime) + Number(row.Lateness)
-    return Object.assign({}, row, {EstDeparture: estDeparture})
+    return _.assign(row, {EstDeparture: estDeparture})
   }
 
   columnNames() {
@@ -96,7 +98,7 @@ class ScheduleFeedDepartures extends React.Component {
   }
 
   fetchSchedule() {
-    $.getJSON('/api/departures.json')
+    $.getJSON(this.props.endpoint)
       .done(this.setSchedule.bind(this))
       .fail(() => {
         alert("Error fetching departures, please try again")
@@ -195,7 +197,6 @@ class ScheduleFeedDepartures extends React.Component {
         {this.header()}
         <div className="flexContainer">
           {this.searchInput() }
-          {this.polling()}
         </div>
 
         <ResponsiveTable rows={schedule} columns={this.columnNames()} format={this.formatMap.bind(this)} />
@@ -204,7 +205,20 @@ class ScheduleFeedDepartures extends React.Component {
   }
 }
 
+const Params = function(queryString) {
+  this.params = queryString
+  this.getBoolean = (value) => { return this.params[value] === 'true' }
+  this.polling = () => { return Boolean(this.getBoolean("polling")) }
+}
+
+Params.of = (queryString) => { return new Params(queryString) }
+
+const params = Params.of(window.APP_PARAMS)
+
 ReactDOM.render(
-  <ScheduleFeedDepartures intervalTime="5000" polling={false}/>,
-  document.getElementById("departureApp")
+  <ScheduleFeedDepartures
+    intervalTime={ 5000 }
+    polling={params.polling()}
+    endpoint={window.APP_API_DEPART}
+  />, document.getElementById("departureApp")
 )

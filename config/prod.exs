@@ -26,6 +26,9 @@ config :schedule_feed, ScheduleFeed.Repo,
 # Do not print debug messages in production
 config :logger, level: :info
 
+config :schedule_feed,
+  departures_url: "/api/departures.json"
+
 # ## SSL Support
 #
 # To get SSL working, you will need to add the `https` key
