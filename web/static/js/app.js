@@ -139,11 +139,10 @@ class ScheduleFeedDepartures extends React.Component {
 
   header() {
     return(
-      <div className="container">
+      <div className="flexContainer">
         <div className="spread">
           <span>{this.now()}</span>
         </div>
-        <div className="top spread">T Departure Infomation</div>
         <div className="spread">
           <label htmlFor="isPolling" className="control-label">Updated:</label>
           <span className="spread" name="lastUpdated"><em>{ new Date().toLocaleTimeString() }</em></span>
@@ -174,7 +173,7 @@ class ScheduleFeedDepartures extends React.Component {
     return (
       <div>
         {this.header()}
-        <div className="container">
+        <div className="flexContainer">
           {this.searchInput() }
           {this.polling()}
         </div>
