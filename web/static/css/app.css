@@ -9,10 +9,11 @@
 
 .flexContainer {
   display: flex;
+  flex-flow: row wrap;
 }
 
 .spread {
-  padding: 1em;
+  padding: .5em;
 }
 
 .top {
@@ -39,7 +40,6 @@ th, td {
 }
 
 tr:nth-child(even) {background-color: #f2f2f2}
-
 
 .blink_me {
   animation: blinker 2s linear infinite;

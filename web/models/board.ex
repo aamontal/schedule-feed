@@ -1,5 +1,5 @@
 require IEx
-# http://developer.mbta.com/lib/gtrtfs/Departures.csv 
+# http://developer.mbta.com/lib/gtrtfs/Departures.csv
 
 defmodule ScheduleFeed.Board do
   use HTTPoison.Base

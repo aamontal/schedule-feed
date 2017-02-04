@@ -17,14 +17,20 @@ class ScheduleFeedDepartures extends React.Component {
     }
   }
 
+  addEstDeparture(row) {
+    const estDeparture = Number(row.ScheduledTime) + Number(row.Lateness)
+    return Object.assign({}, row, {EstDeparture: estDeparture})
+  }
+
   columnNames() {
     return {
       ScheduledTime: "Scheduled Time",
       Destination: "Destination",
       Origin: "Origin",
-      Trip: "Train #",
-      Track: "Track #",
-      Status: "Status"
+      Trip: "Train",
+      Track: "Track",
+      Status: "Status",
+      EstDeparture: "Estimated",
     }
   }
 
@@ -38,6 +44,8 @@ class ScheduleFeedDepartures extends React.Component {
       return (<strong className="blink_me">{status}</strong>)
     case "Cancelled":
       return (<span className='red'>{status}</span>)
+    case "Late":
+      return (<span className='red'>{status}</span>)
     default:
       return status
     }
@@ -46,6 +54,7 @@ class ScheduleFeedDepartures extends React.Component {
   formatMap(column, value) {
     const action = {
       ScheduledTime:  this.formatTime,
+      EstDeparture:  this.formatTime,
       TimeStamp:      this.formatDate,
       Status:         this.foramtStatus,
       Track:          (track) => { return Boolean(track) ? track : "TBD" }
@@ -81,7 +90,9 @@ class ScheduleFeedDepartures extends React.Component {
         return true
       }
     })
-    this.setState({schedule: filteredSchedule})
+
+    const revSchedule = filteredSchedule.map(this.addEstDeparture.bind(this))
+    this.setState({schedule: revSchedule})
   }
 
   fetchSchedule() {
@@ -131,7 +142,7 @@ class ScheduleFeedDepartures extends React.Component {
   searchInput() {
     return(
       <div className="right">
-        <label htmlFor="search" className="control-label spread">Destination Search:</label>
+        <label htmlFor="search" className="control-label spread">Search:</label>
         <input name="search" type="text" onKeyUp={this.handleKeyPress.bind(this)} />
       </div>
     )
@@ -154,7 +165,7 @@ class ScheduleFeedDepartures extends React.Component {
   polling() {
     return(
      <div className="spread">
-        <label htmlFor="isPolling" className="control-label">Auto-refresh:</label>
+        <label htmlFor="isPolling" className="control-label">Refresh:</label>
         <span className="spread">
         <input
           name="isPolling"
