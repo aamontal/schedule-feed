@@ -110,8 +110,11 @@ class ScheduleFeedDepartures extends React.Component {
     console.log("FETCHING")
     return $.getJSON(this.props.endpoint)
       .done(this.setSchedule.bind(this))
-      .fail(() => {
-        console.warn("Aborting fetching departures, please try again")
+      .fail((xhr, text_status, error_thrown) => {
+        console.warn("Aborting fetching departures, please try again", text_status)
+        if (text_status != "abort") {
+          console.error("Error fetching schedule data, please try again", text_status)
+        }
       })
   }
 
