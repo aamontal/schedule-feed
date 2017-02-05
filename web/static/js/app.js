@@ -18,9 +18,9 @@ class ScheduleFeedDepartures extends React.Component {
     this.previousTimer = null
   }
 
-  addEstDeparture(row) {
-    const estDeparture = Number(row.ScheduledTime) + Number(row.Lateness)
-    return _.assign(row, {EstDeparture: estDeparture})
+  componentDidMount() {
+    this.executeSearch(this.fetchSchedule.bind(this))
+    this.togglePolling(this.state.poll)
   }
 
   columnNames() {
@@ -35,29 +35,42 @@ class ScheduleFeedDepartures extends React.Component {
     }
   }
 
-  foramtStatus(status) {
-    switch(status) {
-    case "On Time":
-      return (<span className='green'>{status}</span>)
-    case "Now Boarding":
-      return (<span className="blink_me">{status}</span>)
-    case "All Aboard":
-      return (<strong className="blink_me">{status}</strong>)
-    case "Cancelled":
-      return (<span className='red'>{status}</span>)
-    case "Late":
-      return (<span className='red'>{status}</span>)
-    default:
-      return status
-    }
-  }
-
   formatMap(column, value) {
+
+    const formatStatus = (status) => {
+      switch(status) {
+      case "On Time":
+        return (<span className='green'>{status}</span>)
+      case "Now Boarding":
+        return (<span className="blink_me">{status}</span>)
+      case "All Aboard":
+        return (<strong className="blink_me">{status}</strong>)
+      case "Cancelled":
+        return (<span className='red'>{status}</span>)
+      case "Late":
+        return (<span className='red'>{status}</span>)
+      default:
+        return status
+      }
+    }
+
+    const formatDate = (unixtime) => {
+      const newDate = new Date()
+      newDate.setTime(Number(unixtime) * 1000)
+      return <span>{newDate.toLocaleString()}</span>
+    }
+
+    const formatTime = (unixtime) => {
+      const newDate = new Date()
+      newDate.setTime(Number(unixtime) * 1000)
+      return <span>{newDate.toLocaleTimeString()}</span>
+    }
+
     const action = {
-      ScheduledTime:  this.formatTime,
-      EstDeparture:   this.formatTime,
-      TimeStamp:      this.formatDate,
-      Status:         this.foramtStatus,
+      ScheduledTime:  formatTime,
+      EstDeparture:   formatTime,
+      TimeStamp:      formatDate,
+      Status:         formatStatus,
       Track:          (track) => { return Boolean(track) ? track : "TBD" }
     }
 
@@ -65,23 +78,6 @@ class ScheduleFeedDepartures extends React.Component {
       return action[column](value)
     else
       return value
-  }
-
-  formatDate(unixtime) {
-    const newDate = new Date()
-    newDate.setTime(Number(unixtime) * 1000)
-    return <span>{newDate.toLocaleString()}</span>
-  }
-
- formatTime(unixtime) {
-    const newDate = new Date()
-    newDate.setTime(Number(unixtime) * 1000)
-    return <span>{newDate.toLocaleTimeString()}</span>
-  }
-
-  componentDidMount() {
-    this.executeSearch(this.fetchSchedule.bind(this))
-    this.togglePolling(this.state.poll)
   }
 
   setSchedule(schedule) {
@@ -92,7 +88,13 @@ class ScheduleFeedDepartures extends React.Component {
         return true
       }
     })
-    const revSchedule = filteredSchedule.map(this.addEstDeparture.bind(this))
+
+    const addEstDeparture = (row) => {
+      const estDeparture = Number(row.ScheduledTime) + Number(row.Lateness)
+      return _.assign(row, {EstDeparture: estDeparture})
+    }
+
+    const revSchedule = filteredSchedule.map(addEstDeparture)
     this.setState({schedule: revSchedule})
   }
 
@@ -117,7 +119,6 @@ class ScheduleFeedDepartures extends React.Component {
         }
       })
   }
-
 
   togglePolling(check) {
     if(check){
