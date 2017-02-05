@@ -1,0 +1,50 @@
+.green {
+  color: darkgreen;
+}
+
+.red {
+  color: darkred;
+}
+
+.flexContainer {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+}
+
+.spread {
+  padding: .5em;
+}
+
+.top {
+  text-align: center;
+}
+
+input {
+  border-color: #ffebcd
+}
+
+body {
+  background: #ffffff;
+  color: #4d4d4d;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th, td {
+  text-align: left;
+  padding: 1em;
+}
+
+tr:nth-child(even) {background-color: #f2f2f2}
+
+.blink_me {
+  animation: blinker 2s linear infinite;
+}
+
+@keyframes blinker {
+  50% { opacity: 0; }
+}
