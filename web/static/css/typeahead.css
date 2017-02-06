@@ -19,10 +19,7 @@
 .s-typeahead-input {
   width: 100%;
   padding: 8px;
-  font-size: 14px;
   outline: none;
-  border: 1px solid #D6D2D2;
-  box-sizing: border-box;
 }
 
 .s-typeahead-list {
