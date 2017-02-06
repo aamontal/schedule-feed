@@ -1,7 +1,8 @@
 import React, {Component, PropTypes} from 'react'
 import ResponsiveTable from './responsive-table'
 import ScheduleFormatter from './schedule-formatter'
-import Typeahead from 'react-simple-typeahead'
+import {Typeahead} from 'react-bootstrap-typeahead';
+
 import _ from 'lodash'
 
 export default class ScheduleFeedDepartures extends Component {
@@ -10,7 +11,7 @@ export default class ScheduleFeedDepartures extends Component {
 
     this.state = {
       schedule: [],
-      filter: '',
+      filter: [],
       interval: null,
       poll: props.polling
     }
@@ -70,9 +71,9 @@ export default class ScheduleFeedDepartures extends Component {
 
   // applies filtering and assigns virtual columns to a fetched schedule
   decorateSchedule(rawSchedule) {
-    const filteredSchedule = rawSchedule.filter((s) => {
-      if(this.state.filter){
-        return s.Destination.includes(this.state.filter)
+    const filteredSchedule = rawSchedule.filter((trip) => {
+      if(!_.isEmpty(this.state.filter)){
+        return this.state.filter.includes(trip.Destination)
       } else {
         return true
       }
@@ -91,7 +92,7 @@ export default class ScheduleFeedDepartures extends Component {
 
     this.previousTimer = setTimeout( () =>
       this.previousSearch = search(),
-      500
+      400
     )
   }
 
@@ -117,19 +118,11 @@ export default class ScheduleFeedDepartures extends Component {
 
     return(
       <div className="spread">
-        <Typeahead
-          options={this.getDestinations()}
-          onOptionSelected={this.handleInputSelect}
-          maxOptionsCount={4}
-          placeholder="Type destination here..."
-          onInputEmpty={this.handleInputSelect}
-          customClasses={{
-            input: 's-typeahead-input',
-            list: 's-typeahead-list',
-            listItem: 's-typeahead-list-item',
-            listItemSelected: 's-typeahead-list-item--selected'
-          }}
-        />
+      <Typeahead
+        onChange={this.handleInputSelect}
+        options={this.getDestinations()}
+        placeholder="Destination Search..."
+      />
       </div>
     )
   }

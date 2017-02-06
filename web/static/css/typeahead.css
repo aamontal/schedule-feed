@@ -1,47 +1,44 @@
-.main {
-  display: flex;
+.bootstrap-typeahead .dropdown-menu > li a {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-
-.block {
-  flex-grow: 1;
-  flex-basis: 50%;
-  padding: 0 30px;
-}
-
-.selected-option {
-  margin-bottom: 20px;
-}
-
-.s-typeahead-wrapper {
-
-}
-
-.s-typeahead-input {
-  width: 100%;
-  padding: 8px;
+.bootstrap-typeahead .dropdown-menu > li a:focus {
   outline: none;
 }
 
-.s-typeahead-list {
-  width: 100%;
-  list-style: none;
-  padding: 0;
-  margin: 0;
+.bootstrap-typeahead .dropdown-menu-justify {
+  right: 0;
 }
 
-.s-typeahead-list-item {
-  width: 100%;
-  background: #fff;
-  border-bottom: 1px solid #ccc;
-  text-align: left;
-  padding: 5px;
-  box-sizing: border-box;
+.bootstrap-typeahead-menu-paginator {
+  text-align: center;
 }
 
-.s-typeahead-list-item:last-child {
-  border: none;
+/* Input sizes */
+.bootstrap-tokenizer {
+  padding-bottom: 2px;
+  padding-top: 5px;
 }
 
-.s-typeahead-list-item--selected, .s-typeahead-list-item:hover {
-  background: lightgrey;
+.input-sm.bootstrap-tokenizer {
+  padding-bottom: 1px;
+  padding-top: 4px;
+}
+
+.input-lg.bootstrap-tokenizer {
+  padding-bottom: 6px;
+  padding-top: 9px;
+}
+
+
+.bootstrap-tokenizer-input {
+  margin: 1px 0 4px;
+}
+
+.has-aux {
+  padding-right: 32px;
+}
+
+.has-aux.input-lg {
+  padding-right: 42px;
 }
