@@ -1,6 +1,8 @@
 import React, {Component, PropTypes} from 'react'
 import ResponsiveTable from './responsive-table'
 import ScheduleFormatter from './schedule-formatter'
+import Typeahead from 'react-simple-typeahead'
+import _ from 'lodash'
 
 export default class ScheduleFeedDepartures extends Component {
   constructor(props) {
@@ -15,7 +17,7 @@ export default class ScheduleFeedDepartures extends Component {
 
     this.handleButtonClick  = this.handleButtonClick.bind(this)
     this.handlePollChange   = this.handlePollChange.bind(this)
-    this.handleKeyPress     = this.handleKeyPress.bind(this)
+    this.handleInputSelect  = this.handleInputSelect.bind(this)
     this.getSchedule        = this.getSchedule.bind(this)
     this.decorateSchedule   = this.decorateSchedule.bind(this)
 
@@ -28,14 +30,13 @@ export default class ScheduleFeedDepartures extends Component {
     this.togglePolling(this.state.poll)
   }
 
-  handleKeyPress(e) {
-    const value = e.target.value
-    const filterSearch = (filterValue) => {
-      this.setState({filter: filterValue.toLowerCase()})
+  handleInputSelect(value) {
+    const filterSearch = () => {
+      this.setState({filter: value})
       return this.getSchedule()
     }
 
-    this.executeSearch(() => filterSearch(value))
+    this.executeSearch(filterSearch)
   }
 
   handlePollChange(e) {
@@ -62,11 +63,16 @@ export default class ScheduleFeedDepartures extends Component {
       })
   }
 
+  getDestinations() {
+    const {schedule} = this.state
+    return _.uniq(_.map(schedule, (trip) => { return trip.Destination }))
+  }
+
   // applies filtering and assigns virtual columns to a fetched schedule
   decorateSchedule(rawSchedule) {
     const filteredSchedule = rawSchedule.filter((s) => {
       if(this.state.filter){
-        return s.Destination.toLowerCase().includes(this.state.filter)
+        return s.Destination.includes(this.state.filter)
       } else {
         return true
       }
@@ -108,10 +114,22 @@ export default class ScheduleFeedDepartures extends Component {
   }
 
   renderSearchInput() {
+
     return(
       <div className="spread">
-        <input name="search" type="text" onKeyUp={this.handleKeyPress} />
-        <button onClick={this.handleButtonClick}>search</button>
+        <Typeahead
+          options={this.getDestinations()}
+          onOptionSelected={this.handleInputSelect}
+          maxOptionsCount={4}
+          placeholder="Type destination here..."
+          onInputEmpty={this.handleInputSelect}
+          customClasses={{
+            input: 's-typeahead-input',
+            list: 's-typeahead-list',
+            listItem: 's-typeahead-list-item',
+            listItemSelected: 's-typeahead-list-item--selected'
+          }}
+        />
       </div>
     )
   }
