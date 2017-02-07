@@ -27,7 +27,6 @@ export default class ScheduleFormatter {
 
   // applies a formatting function to a given column by column key
   static formatMap(columnKey, value) {
-
     const formatStatus = (status) => {
       switch(status) {
       case "On Time":

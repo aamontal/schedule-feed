@@ -2,7 +2,6 @@ import React, {Component, PropTypes} from 'react'
 import ResponsiveTable from './responsive-table'
 import ScheduleFormatter from './schedule-formatter'
 import {Typeahead} from 'react-bootstrap-typeahead';
-
 import _ from 'lodash'
 
 export default class ScheduleFeedDepartures extends Component {
@@ -52,7 +51,6 @@ export default class ScheduleFeedDepartures extends Component {
   // calls api for schedule
   getSchedule() {
     console.log("FETCHING...")
-
     return $.getJSON(this.props.endpoint)
       .done(this.decorateSchedule)
       .fail((xhr, text_status, error_thrown) => {
@@ -115,7 +113,6 @@ export default class ScheduleFeedDepartures extends Component {
   }
 
   renderSearchInput() {
-
     return(
       <div className="spread">
       <Typeahead
